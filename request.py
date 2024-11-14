@@ -4,7 +4,7 @@
 import requests
 import json
 
-url = "http://{IP_ADDRESS}:{PORT}/generate"
+url = "https://{IP_ADDRESS}:{PORT}/generate"
 
 
 content = {
