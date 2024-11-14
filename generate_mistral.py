@@ -113,23 +113,8 @@ def convert_input(query: CompletionQuery, history: dict) -> str:
 
 
 def extract_output(response: str, history: dict, chat_id: str) -> str:
-    output = response.split("<start_header_id>system<end_header_id>")
-    if len(output) < 1:
-        return ""
-
-    output = output[1]
-
-    output = output.split("<start_header_id>user<end_header_id>")
-    if len(output) < 1:
-        return ""
-
-    output = output[0]
-
-    output = output.split("<|eot_id|>")
-    if len(output) == 0:
-        return ""
-
-    output = output[0].strip()
+    output = output.split("<start_header_id>user<end_header_id>")[0]
+    output = output.split("<|eot_id|>")[0].strip()
 
     # Append to history
     paired = ("system", output)
@@ -154,7 +139,7 @@ async def generate(query: CompletionQuery):
         custom_stop_tokens=query.custom_stop_tokens, 
         max_new_tokens=query.max_new_tokens
     )
-    # output = extract_output(output, history, query.chat_id)
+    output = extract_output(output, history, query.chat_id)
     return {"generated_text": output}
 
 # if __name__ == "__main__":
