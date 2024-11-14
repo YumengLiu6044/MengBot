@@ -31,8 +31,7 @@ base_model = AutoModelForCausalLM.from_pretrained(
     pretrained_model_name_or_path=base_model_id,
     quantization_config=bnb_config,  
     trust_remote_code=True,
-    token=True,
-    low_cpu_mem_usage=False
+    token=True
 )
 
 eval_tokenizer = AutoTokenizer.from_pretrained(
