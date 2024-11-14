@@ -118,6 +118,10 @@ def convert_input(query: CompletionQuery, history: dict) -> str:
 def extract_output(response: str, history: dict, chat_id: str) -> str:
     output = response.split("<start_header_id>user<end_header_id>")[0]
     output = output.split("<|eot_id|>")[0].strip()
+    output = output.split("<start_header_id>user<end_header_id>")
+    output = [x.strip() for x in output]
+    output = list(filter(lambda a: len(a) != 0, output))
+    output = "\n".join(output)
 
     # Append to history
     paired = ("system", output)
