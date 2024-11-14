@@ -29,7 +29,8 @@ bnb_config = BitsAndBytesConfig(
 
 base_model = AutoModelForCausalLM.from_pretrained(
     pretrained_model_name_or_path=base_model_id,
-    quantization_config=bnb_config,  
+    quantization_config=bnb_config,
+    torch_dtype=torch.float16,  
     trust_remote_code=True,
     token=True
 )
@@ -116,6 +117,7 @@ def convert_input(query: CompletionQuery, history: dict) -> str:
 
 
 def extract_output(response: str, history: dict, chat_id: str) -> str:
+    # Output extration
     output = response.split("<start_header_id>user<end_header_id>")[0]
     output = output.split("<|eot_id|>")[0].strip()
     output = output.split("<start_header_id>system<end_header_id>")
