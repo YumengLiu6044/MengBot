@@ -52,7 +52,8 @@ print(ft_model)
 generator = pipeline(
     "text-generation",
     model=ft_model,
-    tokenizer=eval_tokenizer
+    tokenizer=eval_tokenizer,
+    device = 0 if torch.cuda.is_available() else -1
 )
 
 def generate_with_model(eval_prompt, temperature, repetition_penalty, custom_stop_tokens, max_new_tokens):        
