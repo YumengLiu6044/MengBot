@@ -46,14 +46,28 @@ print(ft_model)
 
 def generate_with_model(eval_prompt, temperature, repetition_penalty, custom_stop_tokens, max_new_tokens):        
     model_input = eval_tokenizer(eval_prompt, return_tensors="pt").to(device)
+    model_input = model_input["input_ids"]
 
     with torch.no_grad():
         if custom_stop_tokens is None:
-            model_output = ft_model.generate(**model_input, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, temperature=temperature)[0]
+            model_output = ft_model.generate(
+                model_input, 
+                max_new_tokens=max_new_tokens, 
+                repetition_penalty=repetition_penalty, 
+                temperature=temperature
+                )[0]
         else:
-            model_output = ft_model.generate(**model_input, max_new_tokens=max_new_tokens, repetition_penalty=repetition_penalty, stop_strings=custom_stop_tokens.split(","), tokenizer=eval_tokenizer, temperature=temperature)[0]
+            model_output = ft_model.generate(
+                model_input, 
+                max_new_tokens=max_new_tokens, 
+                repetition_penalty=repetition_penalty, 
+                stop_strings=custom_stop_tokens.split(","), 
+                tokenizer=eval_tokenizer, 
+                temperature=temperature
+            )[0]
 
         text_output = eval_tokenizer.decode(model_output, skip_special_tokens=True)
+
         print(text_output)
         return text_output
 
@@ -136,7 +150,13 @@ async def generate(query: CompletionQuery):
     global history
 
     collected_prompt = convert_input(query, history)
-    output = generate_with_model(eval_prompt=collected_prompt, temperature=query.temperature, repetition_penalty=query.repetition_penalty, custom_stop_tokens=query.custom_stop_tokens, max_new_tokens=query.max_new_tokens)
+    output = generate_with_model(
+        eval_prompt=collected_prompt, 
+        temperature=query.temperature, 
+        repetition_penalty=query.repetition_penalty, 
+        custom_stop_tokens=query.custom_stop_tokens, 
+        max_new_tokens=query.max_new_tokens
+    )
     output = extract_output(output, history, query.chat_id)
     return {"generated_text": output}
 
