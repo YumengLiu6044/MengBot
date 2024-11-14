@@ -111,7 +111,7 @@ def extract_output(response: str, history: dict, chat_id: str) -> str:
 
     output = output[1]
 
-    output = response.split("<start_header_id>user<end_header_id>")
+    output = output.split("<start_header_id>user<end_header_id>")
     if len(output) < 1:
         return ""
 
