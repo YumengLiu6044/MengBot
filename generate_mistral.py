@@ -31,10 +31,16 @@ base_model = AutoModelForCausalLM.from_pretrained(
     pretrained_model_name_or_path=base_model_id,
     quantization_config=bnb_config,  
     trust_remote_code=True,
-    token=True
+    token=True,
+    low_cpu_mem_usage=False
 )
 
-eval_tokenizer = AutoTokenizer.from_pretrained(base_model_id, add_bos_token=True, trust_remote_code=True, use_fast=True)
+eval_tokenizer = AutoTokenizer.from_pretrained(
+    base_model_id, 
+    add_bos_token=True, 
+    trust_remote_code=True, 
+    use_fast=True
+    )
 # unk token was used as pad token during finetuning, must set the same here
 eval_tokenizer.pad_token = eval_tokenizer.unk_token
 ft_model = PeftModel.from_pretrained(base_model, lora_weights)
@@ -44,8 +50,6 @@ device = torch.device("cuda")
 print(device)
 ft_model.to(device)
 ft_model.eval()
-
-print(ft_model)
 
 # end load model
 
@@ -141,23 +145,3 @@ async def generate(query: CompletionQuery):
     )
     output = extract_output(output, history, query.chat_id)
     return {"generated_text": output}
-
-# if __name__ == "__main__":
-#     query = CompletionQuery()
-#     history = {}
-#     print(convert_input(query, history))
-#     print()
-#     print(f"History: {history}")
-#     sampleOutput = "<start_header_id>user<end_header_id>Hello how are you?<|eot_id|><start_header_id>system<end_header_id>Not bad<|eot_id|>"
-#     print(f"Output: {extract_output(sampleOutput, history, query.chat_id)}")
-#     print(f"History: {history}")
-#     query.prompt = "I went to starbucks today"
-#     print(convert_input(query, history))
-#     print()
-#     print(f"History: {history}")
-#     sampleOutput = "<start_header_id>user<end_header_id>Hello how are you?<|eot_id|>\
-#     <start_header_id>system<end_header_id>Not bad<|eot_id|> \
-#     <start_header_id>user<end_header_id>I went to star bucks today?<|eot_id|>\
-#     <<start_header_id>system<end_header_id>That's cool<|eot_id|>>"
-#     print(f"Output: {extract_output(sampleOutput, history, query.chat_id)}")
-#     print(f"History: {history}")
