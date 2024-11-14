@@ -4,7 +4,7 @@
 import requests
 import json
 
-url = "http://35.208.196.115:9092/generate"
+url = "http://{IP_ADDRESS}:{PORT}/generate"
 
 
 content = {
@@ -16,6 +16,6 @@ content = {
     "custom_stop_tokens": "<|eot_id|>"
 }
 
-response = requests.post(url, json=content)
+response = requests.post(url.format(IP_ADDRESS="", PORT=""), json=content)
 obj = json.loads(response.text)
 print(obj["generated_text"])
