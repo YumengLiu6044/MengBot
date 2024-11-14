@@ -79,7 +79,7 @@ def append_to_history(paired, history: dict, chat_id: str):
     else:
         history[chat_id].append(paired)
     
-    if len(history[chat_id]) > 100:
+    if len(history[chat_id]) > 10:
         history[chat_id].pop(0)
 
 
@@ -106,7 +106,7 @@ def extract_output(response: str, history: dict, chat_id: str) -> str:
     if len(output) < 1:
         return ""
 
-    output = output[-1]
+    output = output[1]
 
     output = output.split("<start_header_id>user<end_header_id>")
     if len(output) < 1:
