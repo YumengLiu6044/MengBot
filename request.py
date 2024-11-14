@@ -16,6 +16,6 @@ content = {
     "custom_stop_tokens": "<|eot_id|>"
 }
 
-response = requests.post(url.format(IP_ADDRESS="", PORT=""), json=content)
+response = requests.post(url.format(IP_ADDRESS="35.209.152.46", PORT="443"), json=content)
 obj = json.loads(response.text)
 print(obj["generated_text"])
