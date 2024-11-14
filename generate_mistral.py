@@ -106,10 +106,10 @@ def convert_input(query: CompletionQuery, history: dict) -> str:
 
 def extract_output(response: str, history: dict, chat_id: str) -> str:
     output = response.split("<start_header_id>system<end_header_id>")
-    if len(output) == 0:
+    if len(output) < 1:
         return ""
 
-    output = output[-1]
+    output = output[1]
 
     output = output.split("<|eot_id|>")
     if len(output) == 0:
@@ -133,9 +133,9 @@ async def generate(query: CompletionQuery):
     global history
 
     collected_prompt = convert_input(query, history)
-    response = generate_with_model(eval_prompt=collected_prompt, temperature=query.temperature, repetition_penalty=query.repetition_penalty, custom_stop_tokens=query.custom_stop_tokens, max_new_tokens=query.max_new_tokens)
-    output = extract_output(response, history, query.chat_id)
-    return {"generated_text": response}
+    output = generate_with_model(eval_prompt=collected_prompt, temperature=query.temperature, repetition_penalty=query.repetition_penalty, custom_stop_tokens=query.custom_stop_tokens, max_new_tokens=query.max_new_tokens)
+    output = extract_output(output, history, query.chat_id)
+    return {"generated_text": output}
 
 # if __name__ == "__main__":
 #     query = CompletionQuery()
