@@ -38,7 +38,7 @@ eval_tokenizer.pad_token = eval_tokenizer.unk_token
 ft_model = PeftModel.from_pretrained(base_model, lora_weights)
 
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 print(device)
 ft_model.to(device)
 ft_model.eval()
