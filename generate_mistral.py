@@ -52,8 +52,7 @@ print(ft_model)
 generator = pipeline(
     "text-generation",
     model=ft_model,
-    tokenizer=eval_tokenizer,
-    device=device
+    tokenizer=eval_tokenizer
 )
 
 def generate_with_model(eval_prompt, temperature, repetition_penalty, custom_stop_tokens, max_new_tokens):        
