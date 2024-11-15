@@ -114,6 +114,7 @@ class ChatBot:
         ChatBot._incoming_friends_ref = ChatBot._user_ref.collection(Constants.INCOMING_FRIEND_REQUESTS)
         ChatBot._included_chats_ref = ChatBot._user_ref.collection(Constants.CHATS_INCLUDING)
 
+        ChatBot._history = {}
         ChatBot._loadHistory()
 
         # Loads the model
