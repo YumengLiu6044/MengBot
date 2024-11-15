@@ -231,20 +231,19 @@ class ChatBot:
 
     @staticmethod
     def _append_to_history(message: Message):
-        role = "system" if message.fromUserID == Constants.BOT_ID else "user"
         chat_id = message.chatID
 
-        if role not in ChatBot._history:
+        if chat_id not in ChatBot._history:
             # Add chat to chatsIncludingUser
-            ChatBot._history[role] = [message]
+            ChatBot._history[chat_id] = [message]
 
             # update cloud
             chat_ref = ChatBot._user_ref.collection(Constants.CHATS_INCLUDING).document(chat_id)
             chat_ref.set({"chatID": chat_id, "notifications": True})
 
         else:
-            ChatBot._history[role] += [message]
-            if len(ChatBot._history[role]) > Config.history_limit:
+            ChatBot._history[chat_id] += [message]
+            if len(ChatBot._history[chat_id]) > Config.history_limit:
                 ChatBot._history.pop(0)
 
     @staticmethod
