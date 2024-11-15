@@ -1,6 +1,7 @@
 import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from collections import namedtuple
 
 from transformers import (
     AutoModelForCausalLM,
@@ -16,6 +17,9 @@ from firebase_admin import (
     credentials
 )
 from google.cloud import firestore
+
+
+MessagePair = namedtuple("paired", "fromUserID content")
 
 
 class Constants:
@@ -269,13 +273,12 @@ class ChatBot:
             inbox_ref.document(message_id).set(message.to_dict())
 
     @staticmethod
-    def _merge_chat_logs(chat_logs: [Message]) -> [Message]:
-        ...
-
-    @staticmethod
     def _convert_input(chatID: str) -> str:
         # Append to template
         template = ""
+        if chatID not in ChatBot._history:
+            raise KeyError(f"chatID: {chatID} not found in history")
+
         chat_logs: [Message] = ChatBot._history[chatID]
         for message in chat_logs:
             role = "system" if message.fromUserID == Constants.BOT_ID else "user"
@@ -297,8 +300,8 @@ class ChatBot:
     @staticmethod
     def _generate(chat_id: str) -> [Message]:
         """
-        Append new message to history and generate a response
-        :param incoming:
+        Generate a response with chat_id
+        :param chat_id: the chat_id to generate a reply for
         :return: the generated response
         """
         print("Generating response...")
