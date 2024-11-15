@@ -200,7 +200,6 @@ class ChatBot:
         eval_prompt,
         temperature,
         repetition_penalty,
-        custom_stop_tokens,
         max_new_tokens
     ):
         output = ChatBot._generator(
@@ -208,7 +207,6 @@ class ChatBot:
             max_new_tokens=max_new_tokens,
             temperature=temperature,
             repetition_penalty=repetition_penalty,
-            custom_stop_tokens=custom_stop_tokens,
             return_full_text=False  # Ensures only new tokens are returned
         )
         # Extract the generated text
@@ -299,7 +297,6 @@ class ChatBot:
             eval_prompt=collected_prompt,
             temperature=Config.temperature,
             repetition_penalty=Config.repetition_penalty,
-            custom_stop_tokens=Config.custom_stop_tokens,
             max_new_tokens=Config.max_new_tokens
         )
         output = ChatBot._extract_output(output)
