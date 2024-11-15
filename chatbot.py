@@ -230,7 +230,7 @@ class ChatBot:
 
     @staticmethod
     def _append_to_history(message: Message):
-        role = "system" if Message.fromUserID == Constants.BOT_ID else "user"
+        role = "system" if message.fromUserID == Constants.BOT_ID else "user"
         chat_id = message.chatID
 
         if role not in ChatBot._history:
