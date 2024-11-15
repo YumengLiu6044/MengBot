@@ -101,6 +101,9 @@ class ChatBot:
     _incoming_friends_ref: firestore.CollectionReference
     _included_chats_ref: firestore.CollectionReference
 
+    _incoming_message_listener: firestore.types.ListenRequest
+    _incoming_friends_listener: firestore.types.ListenRequest
+
     _history: dict
 
     def __init__(self):
@@ -117,8 +120,8 @@ class ChatBot:
         ChatBot._loadModel()
 
         # Initialize listener
-        ChatBot._incoming_messages_ref.on_snapshot(self._onInboxChange)
-        ChatBot._incoming_friends_ref.on_snapshot(self._onFriendChange)
+        ChatBot._incoming_message_listener = ChatBot._incoming_messages_ref.on_snapshot(self._onInboxChange)
+        ChatBot._incoming_friends_listener = ChatBot._incoming_friends_ref.on_snapshot(self._onFriendChange)
 
     @staticmethod
     def _loadModel():
