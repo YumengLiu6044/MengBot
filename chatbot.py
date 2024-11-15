@@ -269,6 +269,10 @@ class ChatBot:
             inbox_ref.document(message_id).set(message.to_dict())
 
     @staticmethod
+    def _merge_chat_logs(chat_logs: [Message]) -> [Message]:
+        ...
+
+    @staticmethod
     def _convert_input(chatID: str) -> str:
         # Append to template
         template = ""
@@ -291,7 +295,7 @@ class ChatBot:
         return output
 
     @staticmethod
-    def _generate(chat_id: str) -> Message:
+    def _generate(chat_id: str) -> [Message]:
         """
         Append new message to history and generate a response
         :param incoming:
@@ -307,17 +311,16 @@ class ChatBot:
             max_new_tokens=Config.max_new_tokens
         )
         output = ChatBot._extract_output(output)
-        output = Message(
+        output = [Message(
             **{
                 "chatID": chat_id,
                 "fromUserID": Constants.BOT_ID,
-                "content": output,
+                "content": part,
                 "contentType": "text",
                 "time": datetime.now(),
                 "readBy": []
             }
-        )
-        print(f"Response\n: {output.content}")
+        ) for part in output.split('\n')]
         return output
 
     @classmethod
@@ -340,17 +343,18 @@ class ChatBot:
                     ChatBot._append_to_history(incoming_message)
 
                     # Generate response
-                    response_msg = ChatBot._generate(incoming_message.chatID)
+                    response_msgs = ChatBot._generate(incoming_message.chatID)
 
-                    # Update history to include response
-                    ChatBot._append_to_history(response_msg)
+                    for response_msg in response_msgs:
+                        # Update history to include response
+                        ChatBot._append_to_history(response_msg)
 
-                    # Update chat log
-                    message_id = ChatBot._update_chat_log(response_msg)
+                        # Update chat log
+                        message_id = ChatBot._update_chat_log(response_msg)
 
-                    # Sends message
-                    chat_id = incoming_message.chatID
-                    ChatBot._send_to_chat_members(chat_id, response_msg, message_id)
+                        # Sends message
+                        chat_id = incoming_message.chatID
+                        ChatBot._send_to_chat_members(chat_id, response_msg, message_id)
 
 
 def _initApp():
