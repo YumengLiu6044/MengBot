@@ -193,6 +193,7 @@ class ChatBot:
         query = chat_log_ref.order_by(Constants.TIME, direction=firestore.Query.DESCENDING).limit(limit)
         # query.order_by(Constants.TIME, direction=firestore.Query.ASCENDING)
         logs = [Message(**doc.to_dict()) for doc in query.stream() if doc.exists]
+        logs.reverse()
         print("History found:")
         for i in logs:
             print("\t" + i.content)
