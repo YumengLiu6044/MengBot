@@ -288,6 +288,7 @@ class ChatBot:
         :param incoming:
         :return: the generated response
         """
+        print("Generating response...")
         ChatBot._append_to_history(incoming)
 
         collected_prompt = ChatBot._convert_input(incoming.chatID)
@@ -310,6 +311,7 @@ class ChatBot:
             }
         )
         ChatBot._append_to_history(output)
+        print(output.content)
         return output
 
     @classmethod
@@ -323,8 +325,9 @@ class ChatBot:
             match change.type.name:
                 case "ADDED":
                     message = Message(**change.document.to_dict())
+                    print(f"Received new message:\n {message.content}")
                     # Remove message from inbox
-                    ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).delete()
+                    ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).document(change.id).delete()
 
                     # Generate response
                     response_msg = ChatBot._generate(message)
