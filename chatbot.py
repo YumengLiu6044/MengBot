@@ -193,6 +193,9 @@ class ChatBot:
         query = chat_log_ref.order_by(Constants.TIME, direction=firestore.Query.DESCENDING).limit(limit)
         query.order_by(Constants.TIME, direction=firestore.Query.ASCENDING)
         logs = [Message(**doc.to_dict()) for doc in query.stream() if doc.exists]
+        print("History found:")
+        for i in logs:
+            print("\t" + i.content)
         return logs
 
     @staticmethod
@@ -225,6 +228,7 @@ class ChatBot:
         chat_id = message.chatID
         chat_log_ref = ChatBot._db.collection(Constants.CHATS).document(chat_id).collection(Constants.CHAT_LOGS)
         message_id = chat_log_ref.add(message.to_dict())
+        print(f"Added to chat log at {message_id}")
         return message_id
 
     @staticmethod
