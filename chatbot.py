@@ -191,7 +191,7 @@ class ChatBot:
         limit: int = Config.history_limit
     ) -> list:
         query = chat_log_ref.order_by(Constants.TIME, direction=firestore.Query.DESCENDING).limit(limit)
-        query.order_by(Constants.TIME, direction=firestore.Query.ASCENDING)
+        # query.order_by(Constants.TIME, direction=firestore.Query.ASCENDING)
         logs = [Message(**doc.to_dict()) for doc in query.stream() if doc.exists]
         print("History found:")
         for i in logs:
@@ -226,10 +226,10 @@ class ChatBot:
         :return: the id of the message
         """
         chat_id = message.chatID
-        chat_log_ref = ChatBot._db.collection(Constants.CHATS).document(chat_id).collection(Constants.CHAT_LOGS)
-        message_id = chat_log_ref.add(message.to_dict())
-        print(f"Added to chat log at {message_id}")
-        return message_id
+        chat_log_ref: firestore.CollectionReference = ChatBot._db.collection(Constants.CHATS).document(chat_id).collection(Constants.CHAT_LOGS)
+        message_ref: firestore.DocumentReference = chat_log_ref.add(message.to_dict())[1]
+        print(f"Added to chat log at {message_ref.id}")
+        return message_ref.id
 
     @staticmethod
     def _append_to_history(message: Message):
