@@ -266,7 +266,7 @@ class ChatBot:
         chat_logs: [Message] = ChatBot._history[chatID]
         for message in chat_logs:
             role = "system" if message.fromUserID == Constants.BOT_ID else "user"
-            template += f"<start_header_id>{role}<end_header_id>{message.content}<|eot_id|>\n"
+            template += f"<start_header_id>{role}<end_header_id>{message.content}{Config.custom_stop_tokens}\n"
 
         template += "<start_header_id>system<end_header_id>"
         return template
