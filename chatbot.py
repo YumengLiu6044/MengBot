@@ -327,11 +327,11 @@ class ChatBot:
             match change.type.name:
                 case "ADDED":
                     dic = change.document.to_dict()
-                    print("Received new message: \n{dic}".format(dic=dic))
+                    incoming_msg_id = change.document.id
                     message = Message(**dic)
                     print(f"Received new message:\n {message.content}")
                     # Remove message from inbox
-                    ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).document(change.id).delete()
+                    ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).document(incoming_msg_id).delete()
 
                     # Generate response
                     response_msg = ChatBot._generate(message)
