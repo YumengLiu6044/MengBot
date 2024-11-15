@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from transformers import (
     AutoModelForCausalLM,
@@ -286,22 +286,20 @@ class ChatBot:
         output = response.split("<start_header_id>user<end_header_id>")[0]
         output = output.split("<|eot_id|>")[0].strip()
         output = output.split("<start_header_id>system<end_header_id>")
-        output = [x.strip() for x in output]
-        output = list(filter(lambda a: a and '/' not in a, output))
+        output = [x.strip() for x in output if x and '/' not in x]
         output = "\n".join(output)
         return output
 
     @staticmethod
-    def _generate(incoming: Message) -> Message:
+    def _generate(chat_id: str) -> Message:
         """
         Append new message to history and generate a response
         :param incoming:
         :return: the generated response
         """
         print("Generating response...")
-        ChatBot._append_to_history(incoming)
 
-        collected_prompt = ChatBot._convert_input(incoming.chatID)
+        collected_prompt = ChatBot._convert_input(chat_id)
         output = ChatBot._generate_with_model(
             eval_prompt=collected_prompt,
             temperature=Config.temperature,
@@ -311,7 +309,7 @@ class ChatBot:
         output = ChatBot._extract_output(output)
         output = Message(
             **{
-                "chatID": incoming.chatID,
+                "chatID": chat_id,
                 "fromUserID": Constants.BOT_ID,
                 "content": output,
                 "contentType": "text",
@@ -319,8 +317,7 @@ class ChatBot:
                 "readBy": []
             }
         )
-        ChatBot._append_to_history(output)
-        print(output.content)
+        print(f"Response\n: {output.content}")
         return output
 
     @classmethod
@@ -334,19 +331,25 @@ class ChatBot:
                 case "ADDED":
                     dic = change.document.to_dict()
                     incoming_msg_id = change.document.id
-                    message = Message(**dic)
-                    print(f"Received new message:\n {message.content}")
+                    incoming_message = Message(**dic)
+                    print(f"Received new message:\n {incoming_message.content}")
                     # Remove message from inbox
                     ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).document(incoming_msg_id).delete()
 
+                    # Update history for input
+                    ChatBot._append_to_history(incoming_message)
+
                     # Generate response
-                    response_msg = ChatBot._generate(message)
+                    response_msg = ChatBot._generate(incoming_message.chatID)
+
+                    # Update history to include response
+                    ChatBot._append_to_history(response_msg)
 
                     # Update chat log
                     message_id = ChatBot._update_chat_log(response_msg)
 
                     # Sends message
-                    chat_id = message.chatID
+                    chat_id = incoming_message.chatID
                     ChatBot._send_to_chat_members(chat_id, response_msg, message_id)
 
 
