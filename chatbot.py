@@ -153,7 +153,6 @@ class ChatBot:
         ChatBot._ft_model = PeftModel.from_pretrained(ChatBot._base_model, lora_weights)
 
         device = torch.device("cuda")
-        print(device)
         ChatBot._ft_model.to(device)
         ChatBot._ft_model.eval()
 
@@ -163,6 +162,7 @@ class ChatBot:
             model=ChatBot._ft_model,
             tokenizer=ChatBot._eval_tokenizer
         )
+        print("Model loaded")
 
     @staticmethod
     def _loadHistory(limit: int = Config.history_limit):
@@ -209,6 +209,7 @@ class ChatBot:
         )
         # Extract the generated text
         text_output = output[0]["generated_text"]
+        print("Output:")
         print(text_output)
         return text_output
 
@@ -317,6 +318,7 @@ class ChatBot:
 
     @staticmethod
     def _onInboxChange(snapshot, changes, read_time):
+        print("Received new inbox")
         for change in changes:
             match change.type.name:
                 case "ADDED":
@@ -336,8 +338,10 @@ class ChatBot:
 
 
 def _initApp():
+    print("Initializing app")
     cred = credentials.ApplicationDefault()
     firebase_admin.initialize_app(cred)
+    print("App successfully initialized")
 
 
 def _run():
