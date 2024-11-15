@@ -21,8 +21,8 @@ from google.cloud import firestore
 class Constants:
     BOT_ID: str = "OIqNXQpz4HQqoFPiPUD01MiJVAu1"
     USERS: str = "users"
-    INCOMING_MESSAGES: str = "incomingMessages"
-    INCOMING_FRIEND_REQUESTS: str = "incomingFriendRequests"
+    INCOMING_MESSAGES: str = "incomingChats"
+    INCOMING_FRIEND_REQUESTS: str = "friendRequests"
     FRIENDS: str = "friends"
     CHATS_INCLUDING: str = "chatsIncludingUser"
 
@@ -101,8 +101,8 @@ class ChatBot:
     _incoming_friends_ref: firestore.CollectionReference
     _included_chats_ref: firestore.CollectionReference
 
-    _incoming_message_listener: firestore.types.ListenRequest
-    _incoming_friends_listener: firestore.types.ListenRequest
+    _incoming_message_listener: firestore.Watch
+    _incoming_friends_listener: firestore.Watch
 
     _history: dict
 
