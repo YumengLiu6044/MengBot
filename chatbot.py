@@ -320,11 +320,12 @@ class ChatBot:
 
     @staticmethod
     def _onInboxChange(snapshot, changes, read_time):
-        print("Received new inbox")
         for change in changes:
             match change.type.name:
                 case "ADDED":
-                    message = Message(**change.document.to_dict())
+                    dic = change.document.to_dict()
+                    print("Received new message: \n{dic}".format(dic=dic))
+                    message = Message(**dic)
                     print(f"Received new message:\n {message.content}")
                     # Remove message from inbox
                     ChatBot._user_ref.collection(Constants.INCOMING_MESSAGES).document(change.id).delete()
