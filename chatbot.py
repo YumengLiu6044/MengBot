@@ -227,7 +227,11 @@ class ChatBot:
         :return: the id of the message
         """
         chat_id = message.chatID
-        chat_log_ref: firestore.CollectionReference = ChatBot._db.collection(Constants.CHATS).document(chat_id).collection(Constants.CHAT_LOGS)
+        chat_log_ref: firestore.CollectionReference = (ChatBot
+                                                       ._db.collection(Constants.CHATS)
+                                                       .document(chat_id)
+                                                       .collection(Constants.CHAT_LOGS)
+                                                       )
         message_ref: firestore.DocumentReference = chat_log_ref.add(message.to_dict())[1]
         print(f"Added to chat log at {message_ref.id}")
         return message_ref.id
@@ -262,7 +266,7 @@ class ChatBot:
                 continue
 
             inbox_ref = ChatBot._db.collection(Constants.USERS).document(member).collection(Constants.INCOMING_MESSAGES)
-            inbox_ref.document(message_id).set(message)
+            inbox_ref.document(message_id).set(message.to_dict())
 
     @staticmethod
     def _convert_input(chatID: str) -> str:
@@ -339,7 +343,7 @@ class ChatBot:
                     response_msg = ChatBot._generate(message)
 
                     # Update chat log
-                    message_id = ChatBot._update_chat_log(message)
+                    message_id = ChatBot._update_chat_log(response_msg)
 
                     # Sends message
                     chat_id = message.chatID
