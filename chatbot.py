@@ -244,7 +244,7 @@ class ChatBot:
         else:
             ChatBot._history[chat_id] += [message]
             if len(ChatBot._history[chat_id]) > Config.history_limit:
-                ChatBot._history.pop(0)
+                ChatBot._history[chat_id].pop(0)
 
     @staticmethod
     def _send_to_chat_members(chat_id: str, message: Message, message_id: str):
