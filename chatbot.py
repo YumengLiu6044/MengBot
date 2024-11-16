@@ -231,11 +231,12 @@ class ChatBot:
         :return: the id of the message
         """
         chat_id = message.chatID
-        chat_log_ref: firestore.CollectionReference = (ChatBot
-                                                       ._db.collection(Constants.CHATS)
-                                                       .document(chat_id)
-                                                       .collection(Constants.CHAT_LOGS)
-                                                       )
+        chat_log_ref: firestore.CollectionReference = (
+            ChatBot
+            ._db.collection(Constants.CHATS)
+            .document(chat_id)
+            .collection(Constants.CHAT_LOGS)
+        )
         message_ref: firestore.DocumentReference = chat_log_ref.add(message.to_dict())[1]
         print(f"Added to chat log at {message_ref.id}")
         return message_ref.id
@@ -326,8 +327,8 @@ class ChatBot:
         ) for part in output.split('\n')]
         return output
 
-    @classmethod
-    def _onFriendChange(cls, snapshot, changes, read_time):
+    @staticmethod
+    def _onFriendChange(snapshot, changes, read_time):
         ...
 
     @staticmethod
@@ -346,18 +347,21 @@ class ChatBot:
                     ChatBot._append_to_history(incoming_message)
 
                     # Generate response
-                    response_msgs = ChatBot._generate(incoming_message.chatID)
+                    ChatBot._generate_response_at(incoming_message.chatID)
 
-                    for response_msg in response_msgs:
-                        # Update history to include response
-                        ChatBot._append_to_history(response_msg)
+    @staticmethod
+    def _generate_response_at(chat_id: str):
+        # Generate response
+        response_msgs = ChatBot._generate(chat_id)
+        for response_msg in response_msgs:
+            # Update history to include response
+            ChatBot._append_to_history(response_msg)
 
-                        # Update chat log
-                        message_id = ChatBot._update_chat_log(response_msg)
+            # Update chat log
+            message_id = ChatBot._update_chat_log(response_msg)
 
-                        # Sends message
-                        chat_id = incoming_message.chatID
-                        ChatBot._send_to_chat_members(chat_id, response_msg, message_id)
+            # Sends message
+            ChatBot._send_to_chat_members(chat_id, response_msg, message_id)
 
 
 def _initApp():
