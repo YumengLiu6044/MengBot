@@ -5,11 +5,11 @@ from collections import namedtuple
 
 from transformers import (
     AutoModelForCausalLM,
-    BitsAndBytesConfig, 
+    BitsAndBytesConfig,
     AutoTokenizer,
     pipeline,
     Pipeline
-    )
+)
 import torch
 from peft import PeftModel
 import firebase_admin
@@ -17,7 +17,6 @@ from firebase_admin import (
     credentials
 )
 from google.cloud import firestore
-
 
 MessagePair = namedtuple("paired", "fromUserID content")
 
@@ -191,8 +190,8 @@ class ChatBot:
 
     @staticmethod
     def _loadChatLog(
-        chat_log_ref: firestore.CollectionReference,
-        limit: int = Config.history_limit
+            chat_log_ref: firestore.CollectionReference,
+            limit: int = Config.history_limit
     ) -> list:
         query = chat_log_ref.order_by(Constants.TIME, direction=firestore.Query.DESCENDING).limit(limit)
         # query.order_by(Constants.TIME, direction=firestore.Query.ASCENDING)
@@ -205,10 +204,10 @@ class ChatBot:
 
     @staticmethod
     def _generate_with_model(
-        eval_prompt,
-        temperature,
-        repetition_penalty,
-        max_new_tokens
+            eval_prompt,
+            temperature,
+            repetition_penalty,
+            max_new_tokens
     ):
         output = ChatBot._generator(
             eval_prompt,
@@ -219,8 +218,6 @@ class ChatBot:
         )
         # Extract the generated text
         text_output = output[0]["generated_text"]
-        print("Output:")
-        print(text_output)
         return text_output
 
     @staticmethod
@@ -293,6 +290,7 @@ class ChatBot:
         # Output extraction
         output = response.split("<start_header_id>user<end_header_id>")[0]
         output = output.split("<|eot_id|>")[0].strip()
+        output = output.split("<eot_id>")[0].strip()
         output = output.split("<start_header_id>system<end_header_id>")
         output = [x.strip() for x in output if x and '/' not in x]
         output = "\n".join(output)
@@ -315,6 +313,7 @@ class ChatBot:
             max_new_tokens=Config.max_new_tokens
         )
         output = ChatBot._extract_output(output)
+        print(output)
         output = [Message(
             **{
                 "chatID": chat_id,
@@ -328,8 +327,17 @@ class ChatBot:
         return output
 
     @staticmethod
-    def _onFriendChange(snapshot, changes, read_time):
+    def _addFriend(new_friend):
         ...
+
+    @staticmethod
+    def _onFriendChange(snapshot, changes, read_time):
+        for change in changes:
+            match change.type.name:
+                case "ADDED":
+                    new_friend = change.document.to_dict()
+                    new_friend = friendRef(**new_friend)
+                    ChatBot._addFriend(new_friend)
 
     @staticmethod
     def _onInboxChange(snapshot, changes, read_time):
