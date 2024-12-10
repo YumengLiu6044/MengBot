@@ -374,7 +374,7 @@ class ChatBot:
 
 def _initApp():
     print("Initializing app")
-    cred = credentials.ApplicationDefault()
+    cred = credentials.Certificate("sdk-keys.json")
     firebase_admin.initialize_app(cred)
     print("App successfully initialized")
 
