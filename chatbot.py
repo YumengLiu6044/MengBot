@@ -89,7 +89,7 @@ class Config:
     custom_stop_tokens: str = "<|eot_id|>"
     max_new_tokens: int = 100
     base_model_id: str = "alpindale/Mistral-7B-v0.2-hf"
-    lora_weights_path: str = "../model/output"
+    lora_weights_path: str = "Yumeng-Liu/MengBotV2"
 
 
 class ChatBot:
